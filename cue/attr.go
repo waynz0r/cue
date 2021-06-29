@@ -32,6 +32,7 @@ import (
 type attributes struct {
 	attr []attr
 }
+
 type attr struct {
 	text   string
 	offset int
@@ -58,7 +59,7 @@ func createAttrs(ctx *context, src source, attrs []*ast.Attribute) (a *attribute
 		}
 		as = append(as, attr{a.Text[:n], index})
 
-		if err := internal.ParseAttrBody(src.Pos(), a.Text[index+1:n-1]).Err; err != nil {
+		if err := internal.ParseAttrBody(src.Pos(), a.Text[index+1:n-1], ',').Err; err != nil {
 			return nil, ctx.mkErr(newNode(a), err)
 		}
 	}

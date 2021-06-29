@@ -108,11 +108,11 @@ func (a *Attr) Lookup(pos int, key string) (val string, found bool, err error) {
 	return "", false, nil
 }
 
-func ParseAttrBody(pos token.Pos, s string) (a Attr) {
+func ParseAttrBody(pos token.Pos, s string, delimiter byte) (a Attr) {
 	i := 0
 	for {
 		// always scan at least one, possibly empty element.
-		n, err := scanAttributeElem(pos, s[i:], &a)
+		n, err := scanAttributeElem(pos, s[i:], &a, delimiter)
 		if err != nil {
 			return Attr{Err: err}
 		}
@@ -127,7 +127,7 @@ func ParseAttrBody(pos token.Pos, s string) (a Attr) {
 	return a
 }
 
-func scanAttributeElem(pos token.Pos, s string, a *Attr) (n int, err errors.Error) {
+func scanAttributeElem(pos token.Pos, s string, a *Attr, delimiter byte) (n int, err errors.Error) {
 	// try CUE string
 	kv := keyValue{}
 	if n, kv.data, err = scanAttributeString(pos, s); n == 0 {
@@ -151,7 +151,7 @@ func scanAttributeElem(pos token.Pos, s string, a *Attr) (n int, err errors.Erro
 				kv.data = s[:offset] + str
 			} else {
 				n = len(s)
-				if p = strings.IndexByte(s[offset:], ','); p >= 0 {
+				if p = strings.IndexByte(s[offset:], delimiter); p >= 0 {
 					n = offset + p
 				}
 				kv.data = s[:n]

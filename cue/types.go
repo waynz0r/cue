@@ -661,7 +661,6 @@ func Dereference(v Value) Value {
 
 	if n == nil {
 		return v
-
 	}
 
 	p := locateNode(v.path, n)
@@ -2169,6 +2168,10 @@ func (v Value) Walk(before func(Value) bool, after func(Value)) {
 // The returned attribute will return an error for any of its methods if there
 // is no attribute for the requested key.
 func (v Value) Attribute(key string) Attribute {
+	return v.AttributeWithDelimiter(key, ',')
+}
+
+func (v Value) AttributeWithDelimiter(key string, delimiter byte) Attribute {
 	// look up the attributes
 	if v.path == nil || v.path.attrs == nil {
 		return Attribute{internal.NewNonExisting(key)}
@@ -2177,7 +2180,7 @@ func (v Value) Attribute(key string) Attribute {
 		if a.key() != key {
 			continue
 		}
-		return Attribute{internal.ParseAttrBody(token.NoPos, a.body())}
+		return Attribute{internal.ParseAttrBody(token.NoPos, a.body(), delimiter)}
 	}
 	return Attribute{internal.NewNonExisting(key)}
 }
